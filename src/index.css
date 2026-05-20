@@ -203,7 +203,7 @@ h1, h2, h3, h4 {
 .hero-right {
     flex: 1;
     position: relative;
-    background-image: url('poli2.jpg');
+    background-image: url('/poli2.jpg');
     background-size: cover;
     background-position: center;
     clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
