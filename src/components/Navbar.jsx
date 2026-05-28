@@ -5,7 +5,7 @@ function Navbar({ isAuthPage }) {
     return (
       <header className="navbar">
         <Link to="/" className="logo-container" style={{ textDecoration: 'none' }}>
-          <img src="/poli.png" alt="Logo Polimdo" />
+          <img src="" alt="" />
           <div className="logo-text">
             Politeknik Negeri Manado
             <span>Teknik Elektro</span>
@@ -21,7 +21,7 @@ function Navbar({ isAuthPage }) {
   return (
     <header className="navbar">
       <div className="logo-container">
-        <img src="/poli.png" alt="Logo Polimdo" />
+        <img src="/" alt="" />
         <div className="logo-text">
           Politeknik Negeri Manado
           <span>Teknik Elektro</span>
