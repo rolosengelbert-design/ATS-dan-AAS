@@ -13,6 +13,7 @@ function DashboardMahasiswa() {
   const namaMhs = location.state?.nama || 'Mahasiswa Aktif';
 
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [kelasSaya, setKelasSaya] = useState([]);
   const [kodeKelasInput, setKodeKelasInput] = useState('');
   const [tugas, setTugas] = useState([]);
@@ -131,7 +132,14 @@ function DashboardMahasiswa() {
 
   return (
     <div className="dashboard-container">
-      <aside className="sidebar">
+      {/* Overlay */}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? 'active' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
+      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
+        <button className="btn-sidebar-close" onClick={() => setSidebarOpen(false)}>✕</button>
         <Link to="/" className="sidebar-logo" style={{ textDecoration: 'none' }}>
           <img src="/poli.png" alt="Logo" />
           <div>Politeknik Negeri<span>Teknik Elektro</span></div>
@@ -140,7 +148,7 @@ function DashboardMahasiswa() {
           <li className="nav-item">
             <a
               className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dashboard')}
+              onClick={() => { setActiveTab('dashboard'); setSidebarOpen(false); }}
               style={{ cursor: 'pointer' }}
             >
               🏠 Dashboard
@@ -149,7 +157,7 @@ function DashboardMahasiswa() {
           <li className="nav-item">
             <a
               className={`nav-link ${activeTab === 'tugas' ? 'active' : ''}`}
-              onClick={() => setActiveTab('tugas')}
+              onClick={() => { setActiveTab('tugas'); setSidebarOpen(false); }}
               style={{ cursor: 'pointer' }}
             >
               📚 Tugas Kelas
@@ -178,9 +186,12 @@ function DashboardMahasiswa() {
 
       <main className="main-content">
         <header className="topbar">
-          <div className="page-info">
-            <h2 style={{ margin: 0 }}>{activeTab === 'dashboard' ? 'Overview' : 'Akademik'}</h2>
-            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>Selamat datang di portal mahasiswa</p>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button className="btn-hamburger" onClick={() => setSidebarOpen(true)}>☰</button>
+            <div className="page-info">
+              <h2 style={{ margin: 0 }}>{activeTab === 'dashboard' ? 'Overview' : 'Akademik'}</h2>
+              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>Selamat datang di portal mahasiswa</p>
+            </div>
           </div>
           <div className="user-profile">
             <div style={{ textAlign: 'right' }}>

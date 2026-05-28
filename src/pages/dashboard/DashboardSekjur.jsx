@@ -10,6 +10,7 @@ function DashboardSekjur() {
   const namaSekjur = location.state?.nama || 'Sekretaris Jurusan';
 
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [semuaKelas, setSemuaKelas] = useState([]);
   const [semuaDosen, setSemuaDosen] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -223,16 +224,23 @@ function DashboardSekjur() {
 
   return (
     <div className="dashboard-container">
-      <aside className="sidebar">
+      {/* Overlay */}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? 'active' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
+      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
+        <button className="btn-sidebar-close" onClick={() => setSidebarOpen(false)}>✕</button>
         <Link to="/" className="sidebar-logo" style={{ textDecoration: 'none' }}>
           <img src="/poli.png" alt="Logo" />
           <div>Politeknik Negeri<span>Teknik Elektro</span></div>
         </Link>
         <ul className="nav-links">
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard</a></li>
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'daftar' ? 'active' : ''}`} onClick={() => setActiveTab('daftar')}>Daftarkan Dosen</a></li>
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'dosen' ? 'active' : ''}`} onClick={() => setActiveTab('dosen')}>Data Seluruh Dosen</a></li>
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'aktivitas' ? 'active' : ''}`} onClick={() => setActiveTab('aktivitas')}>Pantau Aktivitas</a></li>
+          <li className="nav-item"><a className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setSidebarOpen(false); }}>Dashboard</a></li>
+          <li className="nav-item"><a className={`nav-link ${activeTab === 'daftar' ? 'active' : ''}`} onClick={() => { setActiveTab('daftar'); setSidebarOpen(false); }}>Daftarkan Dosen</a></li>
+          <li className="nav-item"><a className={`nav-link ${activeTab === 'dosen' ? 'active' : ''}`} onClick={() => { setActiveTab('dosen'); setSidebarOpen(false); }}>Data Seluruh Dosen</a></li>
+          <li className="nav-item"><a className={`nav-link ${activeTab === 'aktivitas' ? 'active' : ''}`} onClick={() => { setActiveTab('aktivitas'); setSidebarOpen(false); }}>Pantau Aktivitas</a></li>
         </ul>
         <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1rem' }}>
           <button className="btn btn-outline btn-full" onClick={() => navigate('/')}>🚪 Keluar</button>
@@ -241,7 +249,10 @@ function DashboardSekjur() {
 
       <main className="main-content">
         <header className="topbar">
-          <h2>Dashboard Sekretaris Jurusan</h2>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button className="btn-hamburger" onClick={() => setSidebarOpen(true)}>☰</button>
+            <h2 style={{ margin: 0 }}>Dashboard Sekretaris Jurusan</h2>
+          </div>
           <div className="user-profile">
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontWeight: 600 }}>{namaSekjur}</div>

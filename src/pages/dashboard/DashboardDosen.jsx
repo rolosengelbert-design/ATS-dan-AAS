@@ -15,6 +15,7 @@ function DashboardDosen() {
   const namaDosen = location.state?.nama || 'Dosen Pengajar';
 
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [kelas, setKelas] = useState([]);
   const [matakuliah, setMatakuliah] = useState([]);
   const [selectedKelas, setSelectedKelas] = useState('');
@@ -239,8 +240,14 @@ function DashboardDosen() {
 
   return (
     <div className="dashboard-container">
+      {/* Overlay */}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? 'active' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
 
-      <aside className="sidebar print-hide">
+      <aside className={`sidebar print-hide ${sidebarOpen ? 'sidebar-open' : ''}`}>
+        <button className="btn-sidebar-close" onClick={() => setSidebarOpen(false)}>✕</button>
         <Link to="/" className="sidebar-logo" style={{ textDecoration: 'none' }}>
           <img src="/poli.png" alt="Logo" />
           <div>Politeknik Negeri<span>Teknik Elektro</span></div>
@@ -331,9 +338,12 @@ function DashboardDosen() {
       </aside>
       <main className="main-content">
         <header className="topbar">
-          <div className="page-info">
-            <h2 style={{ margin: 0 }}>Portal Dosen</h2>
-            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>Kelola perkuliahan dan evaluasi mahasiswa</p>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button className="btn-hamburger" onClick={() => setSidebarOpen(true)}>☰</button>
+            <div className="page-info">
+              <h2 style={{ margin: 0 }}>Portal Dosen</h2>
+              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>Kelola perkuliahan dan evaluasi mahasiswa</p>
+            </div>
           </div>
           <div className="user-profile">
             <div style={{ textAlign: 'right' }}>

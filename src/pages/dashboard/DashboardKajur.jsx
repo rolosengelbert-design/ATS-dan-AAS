@@ -9,6 +9,7 @@ function DashboardKajur() {
   const namaKajur = location.state?.nama || 'Kepala Jurusan';
 
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dosenPending, setDosenPending] = useState([]);
   const [semuaKelas, setSemuaKelas] = useState([]);
   const [semuaDosen, setSemuaDosen] = useState([]);
@@ -229,7 +230,14 @@ function DashboardKajur() {
 
   return (
     <div className="dashboard-container">
-      <aside className="sidebar" style={{ background: 'linear-gradient(180deg, #0f0c29, #302b63, #24243e)' }}>
+      {/* Overlay */}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? 'active' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
+      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`} style={{ background: 'linear-gradient(180deg, #0f0c29, #302b63, #24243e)' }}>
+        <button className="btn-sidebar-close" onClick={() => setSidebarOpen(false)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}>✕</button>
         <Link to="/" className="sidebar-logo" style={{ textDecoration: 'none' }}>
           <img src="/poli.png" alt="Logo" />
           <div>Politeknik Negeri<span>Teknik Elektro</span></div>
@@ -238,9 +246,9 @@ function DashboardKajur() {
           👑 Kepala Jurusan
         </div>
         <ul className="nav-links">
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard Eksekutif</a></li>
+          <li className="nav-item"><a className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setSidebarOpen(false); }}>Dashboard Eksekutif</a></li>
           <li className="nav-item">
-            <a className={`nav-link ${activeTab === 'verifikasi' ? 'active' : ''}`} onClick={() => setActiveTab('verifikasi')}>
+            <a className={`nav-link ${activeTab === 'verifikasi' ? 'active' : ''}`} onClick={() => { setActiveTab('verifikasi'); setSidebarOpen(false); }}>
               Verifikasi Dosen
               {dosenPending.length > 0 && (
                 <span style={{ background: '#ef4444', color: 'white', borderRadius: '50%', width: '20px', height: '20px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', marginLeft: '8px' }}>
@@ -249,8 +257,8 @@ function DashboardKajur() {
               )}
             </a>
           </li>
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'dosen' ? 'active' : ''}`} onClick={() => setActiveTab('dosen')}>Data Seluruh Dosen</a></li>
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'aktivitas' ? 'active' : ''}`} onClick={() => setActiveTab('aktivitas')}>Pantau Aktivitas</a></li>
+          <li className="nav-item"><a className={`nav-link ${activeTab === 'dosen' ? 'active' : ''}`} onClick={() => { setActiveTab('dosen'); setSidebarOpen(false); }}>Data Seluruh Dosen</a></li>
+          <li className="nav-item"><a className={`nav-link ${activeTab === 'aktivitas' ? 'active' : ''}`} onClick={() => { setActiveTab('aktivitas'); setSidebarOpen(false); }}>Pantau Aktivitas</a></li>
         </ul>
         <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1rem' }}>
           <button className="btn btn-outline btn-full" onClick={() => navigate('/')}>🚪 Keluar</button>
@@ -259,9 +267,12 @@ function DashboardKajur() {
 
       <main className="main-content">
         <header className="topbar">
-          <h2 style={{ background: 'linear-gradient(135deg, #ffd700, #ffb347)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Dashboard Kepala Jurusan
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button className="btn-hamburger" onClick={() => setSidebarOpen(true)}>☰</button>
+            <h2 style={{ background: 'linear-gradient(135deg, #ffd700, #ffb347)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>
+              Dashboard Kepala Jurusan
+            </h2>
+          </div>
           <div className="user-profile">
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontWeight: 700, color: '#fcd34d' }}>{namaKajur}</div>
