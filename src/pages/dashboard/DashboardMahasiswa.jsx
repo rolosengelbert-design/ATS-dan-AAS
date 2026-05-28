@@ -178,7 +178,7 @@ function DashboardMahasiswa() {
             </div>
 
 
-            <div style={{ display: 'grid', gridTemplateColumns: '0.8fr 1.2fr', gap: '2.5rem' }}>
+            <div className="dashboard-grid-layout">
               <div>
                 <div className="section-title-wrapper" style={{ marginBottom: '1.5rem' }}>
                   <h3 className="section-title"> Gabung Kelas Baru</h3>
@@ -473,7 +473,7 @@ function SignaturePad({ onSave }) {
       draw({ clientX: touch.clientX, clientY: touch.clientY });
       e.preventDefault();
     };
-    canvas.ontouchend = () => {
+    canvas.ontouchend = (e) => {
       stopDrawing();
       e.preventDefault();
     };
