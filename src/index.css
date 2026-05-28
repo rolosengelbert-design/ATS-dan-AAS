@@ -91,6 +91,15 @@ h1, h2, h3, h4 {
     gap: 1.5rem;
 }
 
+.hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    color: var(--secondary);
+    cursor: pointer;
+}
+
 /* Buttons */
 .btn {
     display: inline-flex;
@@ -395,8 +404,27 @@ h1, h2, h3, h4 {
     .logo-text {
         font-size: 1rem;
     }
-    .nav-menu .btn:not(.btn-primary) {
+    .hamburger-btn {
+        display: block;
+    }
+    .nav-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--surface);
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+        box-shadow: var(--shadow-md);
         display: none;
+        border-bottom: 1px solid var(--border);
+    }
+    .nav-menu.open {
+        display: flex;
+    }
+    .nav-menu .btn {
+        width: 100%;
     }
 
     /* Hero */
