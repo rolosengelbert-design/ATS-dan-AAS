@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { register } from '../../services/api';
 
 function Register() {
   const [tipeAkun, setTipeAkun] = useState('mahasiswa');
@@ -15,27 +16,17 @@ function Register() {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tipeAkun, nama, identitas, email, password })
-      });
+      await register({ tipeAkun, nama, identitas, email, password });
       
-      const data = await response.json();
-      
-      if (response.ok) {
-        alert(`Pendaftaran ${tipeAkun === 'dosen' ? 'Dosen' : 'Mahasiswa'} Berhasil!\n\nHalo ${nama}, silakan masuk menggunakan kredensial yang telah didaftarkan.`);
-        if(tipeAkun === 'dosen') {
-          navigate('/login-dosen');
-        } else {
-          navigate('/login-mahasiswa');
-        }
+      alert(`Pendaftaran ${tipeAkun === 'dosen' ? 'Dosen' : 'Mahasiswa'} Berhasil!\n\nHalo ${nama}, silakan masuk menggunakan kredensial yang telah didaftarkan.`);
+      if(tipeAkun === 'dosen') {
+        navigate('/login-dosen');
       } else {
-        alert(`Pendaftaran gagal: ${data.message}`);
+        navigate('/login-mahasiswa');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Terjadi kesalahan koneksi ke server. Pastikan Backend sudah berjalan.');
+      alert(error.message || 'Terjadi kesalahan koneksi ke server. Pastikan Backend sudah berjalan.');
     } finally {
       setLoading(false);
     }

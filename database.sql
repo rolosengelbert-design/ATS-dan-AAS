@@ -71,6 +71,7 @@ CREATE TABLE kelas (
     kode_kelas VARCHAR(20) NOT NULL UNIQUE,
     dosen_id INT NOT NULL,
     jumlah_mahasiswa INT DEFAULT 0,
+    nilai_dikirim BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (dosen_id) REFERENCES dosen(id) ON DELETE CASCADE
 );
 

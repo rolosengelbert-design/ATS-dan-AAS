@@ -66,7 +66,8 @@ CREATE TABLE kelas (
     kode_kelas VARCHAR(20) NOT NULL UNIQUE,
     dosen_id INTEGER NOT NULL REFERENCES dosen(id) ON DELETE CASCADE,
     jumlah_mahasiswa INTEGER DEFAULT 0,
-    waktu VARCHAR(100) DEFAULT ''
+    waktu VARCHAR(100) DEFAULT '',
+    nilai_dikirim BOOLEAN DEFAULT FALSE
 );
 
 -- Tabel Mahasiswa_Kelas

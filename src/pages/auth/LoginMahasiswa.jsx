@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { notify } from '../../utils/notifications';
+import { login } from '../../services/api';
 
 function LoginMahasiswa() {
   const [nim, setNim] = useState('');
@@ -17,30 +18,20 @@ function LoginMahasiswa() {
     
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tipeAkun: 'mahasiswa', identitas: nim.trim(), password: password })
+      const data = await login({ tipeAkun: 'mahasiswa', identitas: nim.trim(), password: password });
+      
+      notify.success('Berhasil Masuk!');
+      // Kirim id, nim, dan nama ke Dashboard
+      navigate('/dashboard-mahasiswa', { 
+        state: { 
+          id: data.user.id,
+          nim: data.user.identitas, 
+          nama: data.user.nama 
+        } 
       });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        notify.success('Berhasil Masuk!');
-        // Kirim id, nim, dan nama ke Dashboard
-        navigate('/dashboard-mahasiswa', { 
-          state: { 
-            id: data.user.id,
-            nim: data.user.identitas, 
-            nama: data.user.nama 
-          } 
-        });
-      } else {
-        notify.error(data.message || 'Login gagal. Periksa kembali NIM dan Password Anda.');
-      }
     } catch (error) {
       console.error('Error:', error);
-      notify.error('Tidak dapat terhubung ke server.');
+      notify.error(error.message || 'Tidak dapat terhubung ke server.');
     } finally {
       setLoading(false);
     }

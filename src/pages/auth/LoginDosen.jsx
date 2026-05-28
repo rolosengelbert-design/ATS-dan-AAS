@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { notify } from '../../utils/notifications';
+import { login } from '../../services/api';
 
 function LoginDosen() {
   const [nidn, setNidn] = useState('');
@@ -17,29 +18,19 @@ function LoginDosen() {
     
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tipeAkun: 'dosen', identitas: nidn.trim(), password: password })
+      const data = await login({ tipeAkun: 'dosen', identitas: nidn.trim(), password: password });
+      
+      notify.success('Selamat Datang, Bapak/Ibu Dosen!');
+      navigate('/dashboard-dosen', { 
+        state: { 
+          id: data.user.id,
+          nidn: data.user.identitas, 
+          nama: data.user.nama 
+        } 
       });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        notify.success('Selamat Datang, Bapak/Ibu Dosen!');
-        navigate('/dashboard-dosen', { 
-          state: { 
-            id: data.user.id,
-            nidn: data.user.identitas, 
-            nama: data.user.nama 
-          } 
-        });
-      } else {
-        notify.error(data.message || 'Login gagal. Periksa kembali NIDN dan Password Anda.');
-      }
     } catch (error) {
       console.error('Error:', error);
-      notify.error('Tidak dapat terhubung ke server.');
+      notify.error(error.message || 'Tidak dapat terhubung ke server.');
     } finally {
       setLoading(false);
     }

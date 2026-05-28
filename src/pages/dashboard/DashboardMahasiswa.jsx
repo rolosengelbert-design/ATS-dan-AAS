@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { notify } from '../../utils/notifications';
+import { getKelasByMahasiswa, gabungKelas, getTugasByKelas, getPengumpulanByMahasiswa, batalkanPengumpulan, submitPengumpulan } from '../../services/api';
 import './DashboardMahasiswa.css';
 
 function DashboardMahasiswa() {
@@ -37,8 +38,8 @@ function DashboardMahasiswa() {
 
   const fetchKelasSaya = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/kelas/mahasiswa/${mahasiswaId}`);
-      if (res.ok) setKelasSaya(await res.json());
+      const data = await getKelasByMahasiswa(mahasiswaId);
+      setKelasSaya(data);
     } catch (e) { console.error(e); }
   };
 
@@ -52,42 +53,30 @@ function DashboardMahasiswa() {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/kelas/gabung', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          mahasiswa_id: mahasiswaId,
-          kode_kelas: kodeKelasInput,
-          absen_nim: absenNim,
-          tanda_tangan: signature
-        })
+      const data = await gabungKelas({
+        mahasiswa_id: mahasiswaId,
+        kode_kelas: kodeKelasInput,
+        absen_nim: absenNim,
+        tanda_tangan: signature
       });
-      const data = await res.json();
-      if (res.ok) {
-        notify.success(data.message);
-        setKodeKelasInput('');
-        setSignature('');
-        fetchKelasSaya();
-      } else {
-        notify.error(data.message);
-      }
-    } catch (e) { notify.error('Gagal bergabung ke kelas'); }
+      notify.success(data.message);
+      setKodeKelasInput('');
+      setSignature('');
+      fetchKelasSaya();
+    } catch (e) { notify.error(e.message || 'Gagal bergabung ke kelas'); }
   };
 
   const fetchTugasKelas = async (kelas_id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/tugas/kelas/${kelas_id}`);
-      if (res.ok) setTugas(await res.json());
+      const data = await getTugasByKelas(kelas_id);
+      setTugas(data);
     } catch (e) { console.error(e); }
   };
 
   const fetchPengumpulan = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/pengumpulan/${mahasiswaId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setPengumpulan(data); // Simpan objek lengkap
-      }
+      const data = await getPengumpulanByMahasiswa(mahasiswaId);
+      setPengumpulan(data); // Simpan objek lengkap
     } catch (e) { console.error(e); }
   };
 
@@ -98,21 +87,18 @@ function DashboardMahasiswa() {
       // Temukan data pengumpulan sebelum dihapus untuk di-edit
       const submission = pengumpulan.find(p => p.tugas_id === tugas_id);
 
-      const res = await fetch(`http://localhost:5000/api/pengumpulan/${mahasiswaId}/${tugas_id}`, {
-        method: 'DELETE'
-      });
-      if (res.ok) {
-        notify.success('Pengiriman dibatalkan. Silakan edit kembali jawaban Anda.');
-        fetchPengumpulan();
+      await batalkanPengumpulan(mahasiswaId, tugas_id);
+      
+      notify.success('Pengiriman dibatalkan. Silakan edit kembali jawaban Anda.');
+      fetchPengumpulan();
 
-        // Otomatis buka form edit dengan data sebelumnya
-        if (submission) {
-          const taskObj = tugas.find(t => t.id === tugas_id);
-          setSelectedTugas(taskObj);
-          setJawaban(submission.jawaban_teks || '');
-        }
+      // Otomatis buka form edit dengan data sebelumnya
+      if (submission) {
+        const taskObj = tugas.find(t => t.id === tugas_id);
+        setSelectedTugas(taskObj);
+        setJawaban(submission.jawaban_teks || '');
       }
-    } catch (e) { notify.error('Gagal membatalkan pengiriman'); }
+    } catch (e) { notify.error(e.message || 'Gagal membatalkan pengiriman'); }
   };
 
   const handleKumpulTugas = async (e) => {
@@ -123,30 +109,20 @@ function DashboardMahasiswa() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('tugas_id', selectedTugas.id);
-    formData.append('mahasiswa_id', mahasiswaId);
-    if (jawaban) formData.append('jawaban_teks', jawaban);
-    if (fileUpload) formData.append('file', fileUpload);
-
     try {
-      const res = await fetch('http://localhost:5000/api/pengumpulan', {
-        method: 'POST',
-        // Fetch otomatis akan mengatur header multipart/form-data ketika menggunakan FormData
-        body: formData
-      });
-      if (res.ok) {
-        notify.success('Tugas berhasil dikumpulkan!');
-        fetchPengumpulan();
-        setSelectedTugas(null);
-        setJawaban('');
-        setFileUpload(null);
-        setSignature('');
-      } else {
-        const data = await res.json();
-        notify.error(data.message || 'Gagal mengumpulkan tugas');
-      }
-    } catch (e) { notify.error('Gagal mengumpulkan tugas'); }
+      await submitPengumpulan({
+        tugas_id: selectedTugas.id,
+        mahasiswa_id: mahasiswaId,
+        jawaban_teks: jawaban
+      }, fileUpload);
+      
+      notify.success('Tugas berhasil dikumpulkan!');
+      fetchPengumpulan();
+      setSelectedTugas(null);
+      setJawaban('');
+      setFileUpload(null);
+      setSignature('');
+    } catch (e) { notify.error(e.message || 'Gagal mengumpulkan tugas'); }
   };
 
   const handleLogout = () => {
@@ -383,7 +359,7 @@ function DashboardMahasiswa() {
                           {t.deskripsi}
                         </p>
                         {t.file_url && (
-                          <a href={`http://localhost:5000${t.file_url}`} target="_blank" rel="noreferrer" style={{
+                          <a href={t.file_url} target="_blank" rel="noreferrer" style={{
                             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
                             color: 'var(--primary)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600,
                             marginTop: '0.5rem'

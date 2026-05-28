@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { notify } from '../../utils/notifications';
+import Swal from 'sweetalert2';
 import './DashboardDosen.css';
+import { getBeritaAcaraByDosen, getKelasByDosen, getMatakuliah, getTugasByKelas, getPengumpulanByKelas, getKehadiranKelas, beriNilai, createBeritaAcara, kirimNilaiKelas, createKelas, createMatakuliah, createTugas, updateTugas, updateTargetMahasiswa } from '../../services/api';
 
 function DashboardDosen() {
   const location = useLocation();
@@ -37,8 +39,8 @@ function DashboardDosen() {
 
   // Form State
   const [newKelas, setNewKelas] = useState({ nama_kelas: '', matakuliah_nama: '', kode_kelas: '', jumlah_mahasiswa: '', waktu: '' });
-  const [newTugas, setNewTugas] = useState({ 
-    judul: '', 
+  const [newTugas, setNewTugas] = useState({
+    judul: '',
     deskripsi: '',
     tanggal: '',
     jam_pelaksanaan: ''
@@ -56,77 +58,61 @@ function DashboardDosen() {
 
   const fetchBeritaAcara = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/berita-acara/dosen/${dosenId}`);
-      if (res.ok) setBeritaAcaraList(await res.json());
+      const data = await getBeritaAcaraByDosen(dosenId);
+      setBeritaAcaraList(data);
     } catch (e) { console.error(e); }
   };
 
   const fetchKelas = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/kelas/dosen/${dosenId}`);
-      if (res.ok) setKelas(await res.json());
+      const data = await getKelasByDosen(dosenId);
+      setKelas(data);
     } catch (e) { console.error(e); }
   };
 
   const fetchMatakuliah = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/matakuliah');
-      if (res.ok) setMatakuliah(await res.json());
+      const data = await getMatakuliah();
+      setMatakuliah(data);
     } catch (e) { console.error(e); }
   };
 
   const fetchTugas = async (kelas_id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/tugas/kelas/${kelas_id}`);
-      if (res.ok) setTugas(await res.json());
+      const data = await getTugasByKelas(kelas_id);
+      setTugas(data);
     } catch (e) { console.error(e); }
   };
 
   const fetchLaporan = async (kelas_id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/pengumpulan/kelas/${kelas_id}`);
-      if (res.ok) setLaporan(await res.json());
+      const data = await getPengumpulanByKelas(kelas_id);
+      setLaporan(data);
     } catch (e) { console.error(e); }
   };
 
   const fetchKehadiran = async (kelas_id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/kelas/${kelas_id}/mahasiswa`);
-      if (res.ok) setKehadiran(await res.json());
+      const data = await getKehadiranKelas(kelas_id);
+      setKehadiran(data);
     } catch (e) { console.error(e); }
   };
 
   const handleBeriNilai = async (pengumpulan_id, nilai) => {
     try {
-      const res = await fetch('http://localhost:5000/api/pengumpulan/nilai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pengumpulan_id, nilai: parseInt(nilai) })
-      });
-      if (res.ok) {
-        notify.success('Nilai berhasil disimpan!');
-        fetchLaporan(selectedLaporanKelas); // Refresh tabel
-      } else {
-        notify.error('Gagal menyimpan nilai');
-      }
+      await beriNilai(pengumpulan_id, parseInt(nilai));
+      notify.success('Nilai berhasil disimpan!');
+      fetchLaporan(selectedLaporanKelas); // Refresh tabel
     } catch (e) { notify.error('Gagal menyimpan nilai'); }
   };
 
   const handleSimpanBeritaAcara = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/berita-acara', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...beritaAcaraInput, dosen_id: dosenId, nama_dosen: namaDosen })
-      });
-      if (res.ok) {
-        notify.success('Berita acara berhasil disimpan!');
-        fetchBeritaAcara();
-        setBeritaAcaraInput({ hari_tanggal: '', prodi: '', matakuliah: '', semester: '', kelas: '', waktu: '', kategori: 'ATS', jumlah_terdaftar: '', jumlah_hadir: '', jumlah_tidak_hadir: '', nama_dosen: namaDosen });
-      } else {
-        notify.error('Gagal menyimpan berita acara');
-      }
+      await createBeritaAcara({ ...beritaAcaraInput, dosen_id: dosenId, nama_dosen: namaDosen });
+      notify.success('Berita acara berhasil disimpan!');
+      fetchBeritaAcara();
+      setBeritaAcaraInput({ hari_tanggal: '', prodi: 'D4 Teknik Informatika', matakuliah: '', semester: '', kelas: '', waktu: '', kategori: 'ATS', jumlah_terdaftar: '', jumlah_hadir: '', jumlah_tidak_hadir: '', nama_dosen: namaDosen });
     } catch (e) { notify.error('Gagal menyimpan'); }
   };
 
@@ -135,70 +121,75 @@ function DashboardDosen() {
     setTimeout(() => window.print(), 300);
   };
 
+  const handleKirimNilai = async () => {
+    if (!selectedLaporanKelas) return;
+
+    const result = await Swal.fire({
+      title: 'Kirim Nilai ke Jurusan?',
+      text: 'Apakah Anda yakin ingin mengirimkan seluruh data nilai mahasiswa di kelas ini ke Kajur dan Sekjur?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Kirim',
+      cancelButtonText: 'Batal',
+      background: '#1e293b',
+      color: '#fff',
+      confirmButtonColor: '#0284c7',
+      cancelButtonColor: '#64748b'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await kirimNilaiKelas(selectedLaporanKelas);
+        notify.success('Data nilai berhasil dikirim ke Kajur & Sekjur!');
+        fetchKelas(); // Refresh list kelas agar state nilai_dikirim terupdate
+      } catch (e) {
+        notify.error('Terjadi kesalahan koneksi');
+      }
+    }
+  };
+
   const handleBuatKelas = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/kelas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nama_kelas: newKelas.nama_kelas, matakuliah_nama: newKelas.matakuliah_nama, kode_kelas: newKelas.kode_kelas, dosen_id: dosenId, jumlah_mahasiswa: parseInt(newKelas.jumlah_mahasiswa) })
-      });
-      if (res.ok) {
-        notify.success('Kelas berhasil dibuat!');
-        fetchKelas();
-        setNewKelas({ nama_kelas: '', matakuliah_nama: '', kode_kelas: '', jumlah_mahasiswa: '', waktu: '' });
-      } else {
-        const data = await res.json();
-        notify.error(`Gagal: ${data.message}`);
-      }
-    } catch (e) { notify.error('Gagal membuat kelas'); }
+      await createKelas({ nama_kelas: newKelas.nama_kelas, matakuliah_nama: newKelas.matakuliah_nama, kode_kelas: newKelas.kode_kelas, dosen_id: dosenId, jumlah_mahasiswa: parseInt(newKelas.jumlah_mahasiswa), waktu: newKelas.waktu });
+      notify.success('Kelas berhasil dibuat!');
+      fetchKelas();
+      setNewKelas({ nama_kelas: '', matakuliah_nama: '', kode_kelas: '', jumlah_mahasiswa: '', waktu: '' });
+    } catch (e) { notify.error(e.message || 'Gagal membuat kelas'); }
   };
 
   const handleBuatMatakuliah = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/matakuliah', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newMatakuliah)
-      });
-      if (res.ok) {
-        notify.success('Mata Kuliah berhasil ditambahkan!');
-        fetchMatakuliah();
-        setNewMatakuliah({ kode_mk: '', nama_mk: '', kategori: 'ATS' });
-      } else {
-        const data = await res.json();
-        notify.error(`Gagal: ${data.message}`);
-      }
-    } catch (e) { notify.error('Gagal menambah mata kuliah'); }
+      await createMatakuliah(newMatakuliah);
+      notify.success('Mata Kuliah berhasil ditambahkan!');
+      fetchMatakuliah();
+      setNewMatakuliah({ kode_mk: '', nama_mk: '', kategori: 'ATS' });
+    } catch (e) { notify.error(e.message || 'Gagal menambah mata kuliah'); }
   };
 
   const handleBuatTugas = async (e) => {
     e.preventDefault();
     if (!selectedKelas) return notify.warning('Pilih kelas terlebih dahulu!');
     try {
-      const formData = new FormData();
-      formData.append('kelas_id', selectedKelas);
-      formData.append('judul', newTugas.judul);
-      formData.append('deskripsi', newTugas.deskripsi);
-      formData.append('tanggal', newTugas.tanggal);
-      formData.append('jam_pelaksanaan', newTugas.jam_pelaksanaan);
-      
-      if (tugasFile) formData.append('file', tugasFile);
+      const data = {
+        kelas_id: selectedKelas,
+        judul: newTugas.judul,
+        deskripsi: newTugas.deskripsi,
+        tanggal: newTugas.tanggal,
+        jam_pelaksanaan: newTugas.jam_pelaksanaan
+      };
 
-      const url = isEditingTask 
-        ? `http://localhost:5000/api/tugas/${currentEditingTaskId}`
-        : 'http://localhost:5000/api/tugas';
-      
-      const res = await fetch(url, {
-        method: isEditingTask ? 'PUT' : 'POST',
-        body: formData
-      });
-      if (res.ok) {
-        notify.success(isEditingTask ? 'Tugas berhasil diperbarui!' : 'Tugas berhasil dibuat!');
-        fetchTugas(selectedKelas);
-        resetTaskForm();
+      if (isEditingTask) {
+        await updateTugas(currentEditingTaskId, data, tugasFile);
+        notify.success('Tugas berhasil diperbarui!');
+      } else {
+        await createTugas(data, tugasFile);
+        notify.success('Tugas berhasil dibuat!');
       }
+
+      fetchTugas(selectedKelas);
+      resetTaskForm();
     } catch (e) { notify.error('Gagal memproses tugas'); }
   };
 
@@ -235,15 +226,9 @@ function DashboardDosen() {
 
     if (newTarget) {
       try {
-        const res = await fetch(`http://localhost:5000/api/kelas/${kelasId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jumlah_mahasiswa: newTarget })
-        });
-        if (res.ok) {
-          notify.success('Target berhasil diperbarui!');
-          fetchKelas();
-        }
+        await updateTargetMahasiswa(kelasId, newTarget);
+        notify.success('Target berhasil diperbarui!');
+        fetchKelas();
       } catch (e) { notify.error('Gagal memperbarui target'); }
     }
   };
@@ -315,12 +300,21 @@ function DashboardDosen() {
               📑 Berita Acara
             </a>
           </li>
+          <li className="nav-item">
+            <a
+              className={`nav-link ${activeTab === 'pengiriman_nilai' ? 'active' : ''}`}
+              onClick={() => setActiveTab('pengiriman_nilai')}
+              style={{ cursor: 'pointer' }}
+            >
+              Pengiriman Nilai
+            </a>
+          </li>
         </ul>
         <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1rem' }}>
-          <div style={{ 
-            background: 'rgba(255,255,255,0.05)', 
-            padding: '0.75rem', 
-            borderRadius: '12px', 
+          <div style={{
+            background: 'rgba(255,255,255,0.05)',
+            padding: '0.75rem',
+            borderRadius: '12px',
             marginBottom: '1rem',
             textAlign: 'center',
             border: '1px solid rgba(255,255,255,0.1)'
@@ -558,7 +552,7 @@ function DashboardDosen() {
               <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2rem' }}>
                 <div className="card-glass">
                   <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '1.2rem' }}>{isEditingTask ? '✏️' : '📝'}</span> 
+                    <span style={{ fontSize: '1.2rem' }}>{isEditingTask ? '✏️' : '📝'}</span>
                     {isEditingTask ? 'Edit Tugas' : 'Buat Tugas Baru'}
                   </h3>
                   <form onSubmit={handleBuatTugas} className="modern-form">
@@ -615,8 +609,8 @@ function DashboardDosen() {
                         <div className="task-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                           <strong>{t.judul}</strong>
                           <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            <button 
-                              className="btn-edit-inline" 
+                            <button
+                              className="btn-edit-inline"
                               onClick={() => handleEditClick(t)}
                               title="Edit Tugas"
                             >
@@ -630,7 +624,7 @@ function DashboardDosen() {
                           <span className="task-date">📅 Tanggal: {new Date(t.waktu_mulai || t.tenggat_waktu).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
                           <span className="task-date">🕒 Waktu: {t.jam_pelaksanaan || 'Belum diatur'}</span>
                           {t.file_url && (
-                            <a href={`http://localhost:5000${t.file_url}`} target="_blank" rel="noreferrer" className="task-attachment">
+                            <a href={t.file_url} target="_blank" rel="noreferrer" className="task-attachment">
                               📎 Lampiran
                             </a>
                           )}
@@ -674,11 +668,17 @@ function DashboardDosen() {
 
             {selectedLaporanKelas ? (
               <div className="card-glass table-container print-section">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                   <h3 style={{ margin: 0, fontSize: '1.25rem' }}>📋 Rekapitulasi Jawaban Mahasiswa</h3>
-                  <button className="btn btn-outline print-hide" onClick={() => window.print()}>
-                    🖨️ Cetak PDF / Laporan
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }} className="print-hide">
+                    {/* Fitur kirim nilai telah dipindahkan ke tab Pengiriman Nilai */}
+                    {(() => {
+                      return null;
+                    })()}
+                    <button className="btn btn-outline" onClick={() => window.print()}>
+                      🖨️ Cetak PDF / Laporan
+                    </button>
+                  </div>
                 </div>
                 {laporan.length === 0 ? (
                   <div className="empty-state">
@@ -701,11 +701,11 @@ function DashboardDosen() {
                         {laporan.map((item, idx) => {
                           const kumpulDate = new Date(item.waktu_kumpul);
                           const deadlineDate = new Date(item.tenggat_waktu);
-                          
+
                           // Ambil jam terakhir dari jam_pelaksanaan jika ada (misal: "08:00 - 10:00")
                           const jamPelaksanaan = item.jam_pelaksanaan || "";
                           const times = jamPelaksanaan.match(/(\d{1,2}[:.]\d{2})/g);
-                          
+
                           if (times && times.length > 0) {
                             const lastTime = times[times.length - 1];
                             const [hh, mm] = lastTime.includes(':') ? lastTime.split(':') : lastTime.split('.');
@@ -714,7 +714,7 @@ function DashboardDosen() {
                             // Default ke akhir hari jika tidak ada jam spesifik
                             deadlineDate.setHours(23, 59, 59, 999);
                           }
-                          
+
                           const isLate = kumpulDate > deadlineDate;
                           const defaultNilai = item.nilai !== null && item.nilai !== undefined
                             ? item.nilai
@@ -749,7 +749,7 @@ function DashboardDosen() {
                               <td>
                                 <div className="answer-cell">
                                   {item.file_url && (
-                                    <a href={`http://localhost:5000${item.file_url}`} target="_blank" rel="noreferrer" className="file-link">
+                                    <a href={item.file_url} target="_blank" rel="noreferrer" className="file-link">
                                       📎 Download File
                                     </a>
                                   )}
@@ -1153,7 +1153,99 @@ function DashboardDosen() {
           </div>
         )}
 
+        {/* Tab Pengiriman Nilai */}
+        {activeTab === 'pengiriman_nilai' && (
+          <div className="tab-section-fade">
+            <div className="section-header">
+              <div className="section-title-group">
+                <span className="section-icon">📤</span>
+                <h3 className="section-title">Pengiriman Laporan Perkuliahan (Nilai, Daftar Hadir, Berita Acara)</h3>
+              </div>
+            </div>
 
+            <div className="card-glass table-container">
+              <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+                Silakan klik tombol <strong>Kirim Nilai ke Jurusan</strong> untuk kelas yang sudah selesai. Setelah terkirim, data nilai, daftar hadir, dan berita acara akan langsung dapat dipantau oleh Kajur dan Sekjur.
+              </p>
+
+              <div className="table-responsive">
+                <table className="modern-table">
+                  <thead>
+                    <tr>
+                      <th>Nama Kelas</th>
+                      <th>Mata Kuliah</th>
+                      <th>Kode Kelas</th>
+                      <th style={{ textAlign: 'center' }}>Status Pengiriman</th>
+                      <th style={{ textAlign: 'center' }}>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {kelas.length === 0 ? (
+                      <tr>
+                        <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Belum ada kelas.</td>
+                      </tr>
+                    ) : (
+                      kelas.map(k => (
+                        <tr key={k.id}>
+                          <td style={{ fontWeight: 600, color: 'var(--secondary)' }}>{k.nama_kelas}</td>
+                          <td>{k.matakuliah_nama}</td>
+                          <td><span className="code-access-pill">{k.kode_kelas}</span></td>
+                          <td style={{ textAlign: 'center' }}>
+                            {k.nilai_dikirim ? (
+                              <span style={{
+                                background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.2)',
+                                padding: '0.4rem 0.8rem', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem'
+                              }}>
+                                ✓ Terkirim
+                              </span>
+                            ) : (
+                              <span style={{
+                                background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.2)',
+                                padding: '0.4rem 0.8rem', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem'
+                              }}>
+                                ⚠ Belum Dikirim
+                              </span>
+                            )}
+                          </td>
+                          <td style={{ textAlign: 'center' }}>
+                            {!k.nilai_dikirim && (
+                              <button
+                                className="btn btn-primary"
+                                style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                                onClick={async () => {
+                                  setSelectedLaporanKelas(k.id); // Set id untuk dipakai handleKirimNilai
+                                  // Modifikasi handleKirimNilai behavior atau jalankan logic kirim nilai langsung
+                                  const result = await Swal.fire({
+                                    title: 'Kirim Data ke Jurusan?',
+                                    text: 'Nilai, Daftar Hadir, dan Berita Acara untuk kelas ini akan dikirim ke Kajur dan Sekjur.',
+                                    icon: 'question',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Ya, Kirim',
+                                    cancelButtonText: 'Batal',
+                                    background: '#1e293b', color: '#fff', confirmButtonColor: '#0284c7', cancelButtonColor: '#64748b'
+                                  });
+                                  if (result.isConfirmed) {
+                                    try {
+                                      await kirimNilaiKelas(k.id);
+                                      notify.success('Data perkuliahan berhasil dikirim ke Kajur & Sekjur!');
+                                      fetchKelas();
+                                    } catch (e) { notify.error('Kesalahan koneksi'); }
+                                  }
+                                }}
+                              >
+                                📤 Kirim Nilai ke Jurusan
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Modal Tanda Tangan */}
         {showSignatureModal && (

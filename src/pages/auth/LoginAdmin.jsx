@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { notify } from '../../utils/notifications';
+import { loginAdmin } from '../../services/api';
 
 function LoginAdmin() {
   const [username, setUsername] = useState('');
@@ -16,24 +17,16 @@ function LoginAdmin() {
     }
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username.trim(), password })
-      });
-      const data = await response.json();
-      if (response.ok) {
-        notify.success(`Selamat Datang, ${data.user.role === 'kajur' ? 'Kepala Jurusan' : 'Sekretaris Jurusan'}!`);
-        if (data.user.role === 'kajur') {
-          navigate('/dashboard-kajur', { state: { ...data.user } });
-        } else {
-          navigate('/dashboard-sekjur', { state: { ...data.user } });
-        }
+      const data = await loginAdmin({ username: username.trim(), password });
+      
+      notify.success(`Selamat Datang, ${data.user.role === 'kajur' ? 'Kepala Jurusan' : 'Sekretaris Jurusan'}!`);
+      if (data.user.role === 'kajur') {
+        navigate('/dashboard-kajur', { state: { ...data.user } });
       } else {
-        notify.error(data.message || 'Login gagal');
+        navigate('/dashboard-sekjur', { state: { ...data.user } });
       }
     } catch (err) {
-      notify.error('Tidak dapat terhubung ke server.');
+      notify.error(err.message || 'Tidak dapat terhubung ke server.');
     } finally {
       setLoading(false);
     }
