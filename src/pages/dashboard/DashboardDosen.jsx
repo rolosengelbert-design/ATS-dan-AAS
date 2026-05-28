@@ -4,6 +4,7 @@ import { notify } from '../../utils/notifications';
 import Swal from 'sweetalert2';
 import './DashboardDosen.css';
 import { getBeritaAcaraByDosen, getKelasByDosen, getMatakuliah, getTugasByKelas, getPengumpulanByKelas, getKehadiranKelas, beriNilai, createBeritaAcara, kirimNilaiKelas, createKelas, createMatakuliah, createTugas, updateTugas, updateTargetMahasiswa } from '../../services/api';
+import SidebarDosen from '../../components/dashboard/SidebarDosen';
 
 function DashboardDosen() {
   const location = useLocation();
@@ -30,12 +31,6 @@ function DashboardDosen() {
     hari_tanggal: '', prodi: 'D4 Teknik Informatika', matakuliah: '', semester: '', kelas: '', waktu: '', kategori: 'ATS', jumlah_terdaftar: '', jumlah_hadir: '', jumlah_tidak_hadir: '', nama_dosen: namaDosen
   });
   const [cetakData, setCetakData] = useState(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
 
   // Form State
@@ -246,96 +241,13 @@ function DashboardDosen() {
         onClick={() => setSidebarOpen(false)}
       />
 
-      <aside className={`sidebar print-hide ${sidebarOpen ? 'sidebar-open' : ''}`}>
-        <button className="btn-sidebar-close" onClick={() => setSidebarOpen(false)}>✕</button>
-        <Link to="/" className="sidebar-logo" style={{ textDecoration: 'none' }}>
-          <img src="/poli.png" alt="Logo" />
-          <div>Politeknik Negeri<span>Teknik Elektro</span></div>
-        </Link>
-        <ul className="nav-links">
-          <li className="nav-item">
-            <a
-              className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dashboard')}
-              style={{ cursor: 'pointer' }}
-            >
-              📊 Overview
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className={`nav-link ${activeTab === 'kelas' ? 'active' : ''}`}
-              onClick={() => setActiveTab('kelas')}
-              style={{ cursor: 'pointer' }}
-            >
-              🏫 Manajemen Kelas
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className={`nav-link ${activeTab === 'tugas' ? 'active' : ''}`}
-              onClick={() => setActiveTab('tugas')}
-              style={{ cursor: 'pointer' }}
-            >
-              📚 Manajemen Tugas
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className={`nav-link ${activeTab === 'laporan' ? 'active' : ''}`}
-              onClick={() => setActiveTab('laporan')}
-              style={{ cursor: 'pointer' }}
-            >
-              📥 Laporan Pengumpulan
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className={`nav-link ${activeTab === 'kehadiran' ? 'active' : ''}`}
-              onClick={() => setActiveTab('kehadiran')}
-              style={{ cursor: 'pointer' }}
-            >
-              👥 Daftar Hadir
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className={`nav-link ${activeTab === 'berita_acara' ? 'active' : ''}`}
-              onClick={() => setActiveTab('berita_acara')}
-              style={{ cursor: 'pointer' }}
-            >
-              📑 Berita Acara
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className={`nav-link ${activeTab === 'pengiriman_nilai' ? 'active' : ''}`}
-              onClick={() => setActiveTab('pengiriman_nilai')}
-              style={{ cursor: 'pointer' }}
-            >
-              Pengiriman Nilai
-            </a>
-          </li>
-        </ul>
-        <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1rem' }}>
-          <div style={{
-            background: 'rgba(255,255,255,0.05)',
-            padding: '0.75rem',
-            borderRadius: '12px',
-            marginBottom: '1rem',
-            textAlign: 'center',
-            border: '1px solid rgba(255,255,255,0.1)'
-          }}>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fcd34d' }}>
-              {currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-            </div>
-            <div style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              {currentTime.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' })}
-            </div>
-          </div>
-          <button className="btn btn-outline btn-full" onClick={handleLogout}>🚪 Keluar</button>
-        </div>
-      </aside>
+      <SidebarDosen
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        handleLogout={handleLogout}
+      />
       <main className="main-content">
         <header className="topbar">
           <div style={{ display: 'flex', alignItems: 'center' }}>

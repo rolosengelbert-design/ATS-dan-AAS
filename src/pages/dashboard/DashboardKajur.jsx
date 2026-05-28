@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { notify } from '../../utils/notifications';
 import { getKehadiranKelas, getPengumpulanByKelas, getKelasByDosen, getBeritaAcaraByDosen, getDosenPending, getSemuaKelas, getSemuaDosen, verifikasiDosen } from '../../services/api';
+import SidebarKajur from '../../components/dashboard/SidebarKajur';
 
 function DashboardKajur() {
   const location = useLocation();
@@ -236,34 +237,14 @@ function DashboardKajur() {
         onClick={() => setSidebarOpen(false)}
       />
 
-      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`} style={{ background: 'linear-gradient(180deg, #0f0c29, #302b63, #24243e)' }}>
-        <button className="btn-sidebar-close" onClick={() => setSidebarOpen(false)} style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}>✕</button>
-        <Link to="/" className="sidebar-logo" style={{ textDecoration: 'none' }}>
-          <img src="/poli.png" alt="Logo" />
-          <div>Politeknik Negeri<span>Teknik Elektro</span></div>
-        </Link>
-        <div style={{ padding: '1rem 1.5rem', margin: '0.5rem 0', background: 'rgba(255,215,0,0.08)', borderRadius: '8px', borderLeft: '3px solid gold', fontSize: '0.8rem', color: '#fcd34d' }}>
-          👑 Kepala Jurusan
-        </div>
-        <ul className="nav-links">
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setSidebarOpen(false); }}>Dashboard Eksekutif</a></li>
-          <li className="nav-item">
-            <a className={`nav-link ${activeTab === 'verifikasi' ? 'active' : ''}`} onClick={() => { setActiveTab('verifikasi'); setSidebarOpen(false); }}>
-              Verifikasi Dosen
-              {dosenPending.length > 0 && (
-                <span style={{ background: '#ef4444', color: 'white', borderRadius: '50%', width: '20px', height: '20px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', marginLeft: '8px' }}>
-                  {dosenPending.length}
-                </span>
-              )}
-            </a>
-          </li>
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'dosen' ? 'active' : ''}`} onClick={() => { setActiveTab('dosen'); setSidebarOpen(false); }}>Data Seluruh Dosen</a></li>
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'aktivitas' ? 'active' : ''}`} onClick={() => { setActiveTab('aktivitas'); setSidebarOpen(false); }}>Pantau Aktivitas</a></li>
-        </ul>
-        <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1rem' }}>
-          <button className="btn btn-outline btn-full" onClick={() => navigate('/')}>🚪 Keluar</button>
-        </div>
-      </aside>
+      <SidebarKajur
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        dosenPendingLength={dosenPending.length}
+        handleLogout={() => navigate('/')}
+      />
 
       <main className="main-content">
         <header className="topbar">

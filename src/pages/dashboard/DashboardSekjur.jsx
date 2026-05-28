@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { notify } from '../../utils/notifications';
 import { getKehadiranKelas, getPengumpulanByKelas, getKelasByDosen, getBeritaAcaraByDosen, getSemuaKelas, getSemuaDosen, daftarDosen } from '../../services/api';
+import SidebarSekjur from '../../components/dashboard/SidebarSekjur';
 
 function DashboardSekjur() {
   const location = useLocation();
@@ -230,22 +231,13 @@ function DashboardSekjur() {
         onClick={() => setSidebarOpen(false)}
       />
 
-      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
-        <button className="btn-sidebar-close" onClick={() => setSidebarOpen(false)}>✕</button>
-        <Link to="/" className="sidebar-logo" style={{ textDecoration: 'none' }}>
-          <img src="/poli.png" alt="Logo" />
-          <div>Politeknik Negeri<span>Teknik Elektro</span></div>
-        </Link>
-        <ul className="nav-links">
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setSidebarOpen(false); }}>Dashboard</a></li>
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'daftar' ? 'active' : ''}`} onClick={() => { setActiveTab('daftar'); setSidebarOpen(false); }}>Daftarkan Dosen</a></li>
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'dosen' ? 'active' : ''}`} onClick={() => { setActiveTab('dosen'); setSidebarOpen(false); }}>Data Seluruh Dosen</a></li>
-          <li className="nav-item"><a className={`nav-link ${activeTab === 'aktivitas' ? 'active' : ''}`} onClick={() => { setActiveTab('aktivitas'); setSidebarOpen(false); }}>Pantau Aktivitas</a></li>
-        </ul>
-        <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1rem' }}>
-          <button className="btn btn-outline btn-full" onClick={() => navigate('/')}>🚪 Keluar</button>
-        </div>
-      </aside>
+      <SidebarSekjur
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        handleLogout={() => navigate('/')}
+      />
 
       <main className="main-content">
         <header className="topbar">

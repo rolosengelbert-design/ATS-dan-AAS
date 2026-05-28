@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { notify } from '../../utils/notifications';
 import { getKelasByMahasiswa, gabungKelas, getTugasByKelas, getPengumpulanByMahasiswa, batalkanPengumpulan, submitPengumpulan } from '../../services/api';
+import SidebarMahasiswa from '../../components/dashboard/SidebarMahasiswa';
 import './DashboardMahasiswa.css';
 
 function DashboardMahasiswa() {
@@ -24,13 +25,6 @@ function DashboardMahasiswa() {
   const [absenNim, setAbsenNim] = useState(nim);
   const [signature, setSignature] = useState(''); // Base64 signature
 
-
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     fetchKelasSaya();
@@ -138,51 +132,13 @@ function DashboardMahasiswa() {
         onClick={() => setSidebarOpen(false)}
       />
 
-      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
-        <button className="btn-sidebar-close" onClick={() => setSidebarOpen(false)}>✕</button>
-        <Link to="/" className="sidebar-logo" style={{ textDecoration: 'none' }}>
-          <img src="/poli.png" alt="Logo" />
-          <div>Politeknik Negeri<span>Teknik Elektro</span></div>
-        </Link>
-        <ul className="nav-links">
-          <li className="nav-item">
-            <a
-              className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('dashboard'); setSidebarOpen(false); }}
-              style={{ cursor: 'pointer' }}
-            >
-              🏠 Dashboard
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className={`nav-link ${activeTab === 'tugas' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('tugas'); setSidebarOpen(false); }}
-              style={{ cursor: 'pointer' }}
-            >
-              📚 Tugas Kelas
-            </a>
-          </li>
-        </ul>
-        <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1rem' }}>
-          <div style={{
-            background: 'rgba(255,255,255,0.05)',
-            padding: '0.75rem',
-            borderRadius: '12px',
-            marginBottom: '1rem',
-            textAlign: 'center',
-            border: '1px solid rgba(255,255,255,0.1)'
-          }}>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fcd34d' }}>
-              {currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-            </div>
-            <div style={{ fontSize: '0.65rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              {currentTime.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' })}
-            </div>
-          </div>
-          <button className="btn btn-outline btn-full" onClick={handleLogout}>🚪 Keluar</button>
-        </div>
-      </aside>
+      <SidebarMahasiswa
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        handleLogout={handleLogout}
+      />
 
       <main className="main-content">
         <header className="topbar">
