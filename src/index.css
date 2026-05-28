@@ -601,10 +601,12 @@ h1, h2, h3, h4 {
     backdrop-filter: blur(4px);
     z-index: 199;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.3s ease;
 }
 .sidebar-overlay.active {
     opacity: 1;
+    pointer-events: auto;
 }
 
 /* Sidebar close button — hidden on desktop */
