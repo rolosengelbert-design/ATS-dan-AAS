@@ -348,7 +348,9 @@ h1, h2, h3, h4 {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
+/* =============================================
+   RESPONSIVE — TABLET (max 992px)
+   ============================================= */
 @media (max-width: 992px) {
     .hero {
         flex-direction: column;
@@ -359,7 +361,7 @@ h1, h2, h3, h4 {
         align-items: center;
     }
     .hero-right {
-        min-height: 400px;
+        min-height: 300px;
         clip-path: none;
     }
     .hero h1 {
@@ -368,16 +370,187 @@ h1, h2, h3, h4 {
     .navbar {
         padding: 1rem 2rem;
     }
+
+    /* Dashboard sidebar goes on top */
+    .dashboard-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        padding: 1rem;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .sidebar-logo {
+        margin-bottom: 0;
+        margin-right: auto;
+    }
+    .nav-links {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        flex: unset;
+        width: 100%;
+    }
+    .nav-item {
+        margin-bottom: 0;
+    }
+    .nav-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    .sidebar .btn-outline {
+        margin-top: 0;
+        padding: 0.45rem 1rem;
+        font-size: 0.85rem;
+    }
+    .main-content {
+        padding: 1.5rem;
+    }
+    .topbar {
+        top: -1.5rem;
+    }
 }
 
+/* =============================================
+   RESPONSIVE — MOBILE (max 768px)
+   ============================================= */
 @media (max-width: 768px) {
+    /* Navbar */
+    .navbar {
+        padding: 0.75rem 1rem;
+    }
+    .logo-text {
+        font-size: 1rem;
+    }
     .nav-menu .btn:not(.btn-primary) {
         display: none;
     }
+
+    /* Hero */
+    .hero h1 {
+        font-size: 2.25rem;
+    }
+    .hero p {
+        font-size: 1rem;
+    }
+    .hero-right {
+        min-height: 200px;
+    }
+
+    /* Auth card */
     .auth-card {
-        padding: 2.5rem 1.5rem;
+        padding: 2rem 1.25rem;
+        border-radius: 16px;
+    }
+    .auth-header h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Dashboard */
+    .main-content {
+        padding: 1rem;
+    }
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.75rem 0;
+    }
+    .topbar h2 {
+        font-size: 1.25rem;
+    }
+    .user-profile span {
+        display: none;
+    }
+
+    /* Stat cards */
+    .dashboard-cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    .dash-card {
+        padding: 1.25rem;
+    }
+    .card-value {
+        font-size: 1.6rem;
+    }
+
+    /* Tables — horizontal scroll */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+    }
+
+    /* Modal */
+    .modal-overlay {
+        padding: 0.75rem;
+        align-items: flex-end;
+    }
+    .modal-content-lg {
+        border-radius: 20px 20px 0 0;
+        max-height: 95vh;
+        padding: 1.5rem;
+    }
+
+    /* Lecturer info grid */
+    .lecturer-info-card {
+        grid-template-columns: 1fr;
     }
 }
+
+/* =============================================
+   RESPONSIVE — SMALL MOBILE (max 480px)
+   ============================================= */
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.875rem;
+    }
+
+    /* Dashboard sidebar shrinks further */
+    .sidebar {
+        padding: 0.75rem;
+    }
+    .nav-link {
+        font-size: 0.78rem;
+        padding: 0.4rem 0.6rem;
+    }
+    .sidebar-logo img {
+        height: 30px;
+    }
+    .sidebar-logo div {
+        font-size: 0.85rem;
+    }
+
+    /* Cards go 1 column */
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+    }
+
+    /* Activity tab nav — scrollable */
+    .activity-tab-nav {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 0.75rem;
+    }
+    .activity-tab-btn {
+        white-space: nowrap;
+    }
+
+    /* Buttons full width in forms */
+    .btn-full {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+    }
+}
+
 
 /* Dashboard Layout */
 .dashboard-container {

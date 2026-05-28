@@ -520,3 +520,160 @@
   font-family: 'Courier New', Courier, monospace;
 }
 
+/* =============================================
+   RESPONSIVE — TABLET (max 992px)
+   ============================================= */
+@media (max-width: 992px) {
+  .welcome-banner {
+    flex-direction: column;
+    padding: 2rem;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+  .welcome-stats {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .mini-stat {
+    flex: 1;
+    min-width: 120px;
+    padding: 1rem 1.25rem;
+  }
+  .class-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+  .task-layout {
+    grid-template-columns: 1fr;
+  }
+  .submission-card {
+    position: static;
+  }
+  .dashboard-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =============================================
+   RESPONSIVE — MOBILE (max 768px)
+   ============================================= */
+@media (max-width: 768px) {
+  /* Welcome banner */
+  .welcome-banner {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  .welcome-content h1 {
+    font-size: 2rem;
+  }
+  .welcome-content p {
+    font-size: 0.95rem;
+  }
+  .mini-stat .stat-val {
+    font-size: 1.75rem;
+  }
+
+  /* Class grid — 1 column */
+  .class-grid {
+    grid-template-columns: 1fr;
+  }
+  .student-class-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  /* Task item — stack buttons */
+  .student-task-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .task-actions {
+    width: 100%;
+  }
+  .task-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Summary grid — 1 column */
+  .dashboard-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .summary-card {
+    padding: 1.25rem;
+  }
+
+  /* Signature pad */
+  .signature-pad-container canvas {
+    width: 100% !important;
+    height: 150px !important;
+  }
+  .join-class-container {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  /* Drop zone */
+  .drop-zone {
+    padding: 1.25rem;
+  }
+
+  /* Student ID card */
+  .student-id-card {
+    padding: 1.25rem;
+  }
+}
+
+/* =============================================
+   RESPONSIVE — SMALL MOBILE (max 480px)
+   ============================================= */
+@media (max-width: 480px) {
+  .welcome-content h1 {
+    font-size: 1.6rem;
+  }
+  .welcome-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .mini-stat {
+    min-width: unset;
+  }
+  .mini-stat .stat-val {
+    font-size: 1.5rem;
+  }
+
+  /* Class card meta stacked */
+  .class-card-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* Task badge inline */
+  .task-status-badge {
+    margin-left: 0;
+    margin-top: 0.4rem;
+  }
+
+  /* Summary card */
+  .summary-info h3 {
+    font-size: 1.25rem;
+  }
+  .summary-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1.25rem;
+  }
+
+  /* News ticker */
+  .news-ticker {
+    border-radius: 8px;
+  }
+}
+
+

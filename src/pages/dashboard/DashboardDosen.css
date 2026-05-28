@@ -687,3 +687,183 @@
   height: auto;
   filter: contrast(1.2);
 }
+
+/* =============================================
+   RESPONSIVE — TABLET (max 992px)
+   ============================================= */
+@media (max-width: 992px) {
+  .welcome-banner {
+    flex-direction: column;
+    padding: 2rem;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+  .welcome-stats {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .mini-stat {
+    flex: 1;
+    min-width: 120px;
+    padding: 1rem 1.25rem;
+  }
+  .class-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .class-selector-wrapper {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .class-selector-wrapper select {
+    flex: 1;
+  }
+  .attendance-header {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .attendance-stats-v2 {
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+/* =============================================
+   RESPONSIVE — MOBILE (max 768px)
+   ============================================= */
+@media (max-width: 768px) {
+  .welcome-banner {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  .welcome-content h1 {
+    font-size: 1.75rem;
+  }
+  .welcome-content p {
+    font-size: 0.95rem;
+  }
+  .welcome-stats {
+    gap: 0.75rem;
+  }
+  .mini-stat .stat-val {
+    font-size: 2rem;
+  }
+
+  /* Class grid — 1 column */
+  .class-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Section header stacked */
+  .section-header {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  .section-title {
+    font-size: 1.2rem;
+  }
+  .section-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+
+  /* Task cards */
+  .task-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* Score input — full width */
+  .score-input-group {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .input-sm {
+    width: 100% !important;
+  }
+
+  /* Modal — bottom sheet style */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal-content-v2 {
+    border-radius: 20px 20px 0 0;
+    max-width: 100%;
+  }
+  .card-glass {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  /* Table overflow */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modern-table th,
+  .modern-table td {
+    padding: 0.75rem 0.6rem;
+    font-size: 0.82rem;
+  }
+  .student-cell {
+    gap: 0.5rem;
+  }
+  .avatar-sm {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+
+  /* Stat pills */
+  .stat-group {
+    flex-direction: row;
+  }
+
+  /* Class card actions */
+  .class-card-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .class-card-footer .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* =============================================
+   RESPONSIVE — SMALL MOBILE (max 480px)
+   ============================================= */
+@media (max-width: 480px) {
+  .welcome-content h1 {
+    font-size: 1.4rem;
+  }
+  .welcome-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .mini-stat {
+    min-width: unset;
+  }
+  .mini-stat .stat-val {
+    font-size: 1.6rem;
+  }
+  .class-card-v2 {
+    padding: 1.25rem;
+  }
+  .class-card-name {
+    font-size: 1.1rem;
+  }
+  /* Berita acara form */
+  .modern-form .form-group {
+    margin-bottom: 0.85rem;
+  }
+}
+
